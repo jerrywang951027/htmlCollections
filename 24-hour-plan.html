@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NaviNate — Component Roadmap by Phase</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b13;
+      --panel: #101622;
+      --panel-2: #151d2c;
+      --line: #2b3548;
+      --text: #f1f4ff;
+      --muted: #99a5bb;
+      --primary: #8c7dff;
+      --primary-soft: rgba(140,125,255,.17);
+      --secondary: #42d5df;
+      --secondary-soft: rgba(66,213,223,.11);
+      --green: #43d394;
+      --amber: #ffbd66;
+      --red: #ff7484;
+      --blue: #70adff;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 78% -8%, rgba(140,125,255,.18), transparent 29%),
+        radial-gradient(circle at 0 30%, rgba(66,213,223,.07), transparent 24%),
+        var(--bg);
+      font: 14px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: #b8d3ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button { font: inherit; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      min-height: 64px;
+      padding: 10px max(18px, calc((100vw - 1320px) / 2));
+      background: rgba(8,11,19,.91);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 780; }
+    .mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: linear-gradient(145deg,#9d91ff,#5849dd); box-shadow: 0 7px 20px rgba(140,125,255,.24); }
+    nav { display: flex; gap: 15px; margin-left: auto; font-size: 11px; }
+    .print { margin-left: 14px; padding: 7px 10px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 9px; cursor: pointer; }
+    .wrap { width: min(1320px, calc(100% - 36px)); margin: 0 auto; }
+    .hero { padding: 76px 0 38px; }
+    .kicker { color: var(--secondary); font-size: 10px; font-weight: 850; letter-spacing: 1.55px; text-transform: uppercase; }
+    h1 { max-width: 1050px; margin: 10px 0 18px; font-size: clamp(38px,6vw,72px); line-height: 1.02; letter-spacing: -2.5px; }
+    h2 { margin: 0 0 13px; font-size: clamp(27px,3.5vw,42px); line-height: 1.12; letter-spacing: -.9px; }
+    h3 { margin: 0; font-size: 22px; }
+    h4 { margin: 0 0 7px; font-size: 15px; }
+    p { margin-top: 0; }
+    .lede { max-width: 940px; color: #c8d0df; font-size: 19px; }
+    .scope-note { max-width: 1050px; margin-top: 25px; padding: 16px 18px; color: #ffe1b9; background: rgba(255,189,102,.08); border: 1px solid rgba(255,189,102,.27); border-radius: 13px; }
+    section { padding: 42px 0; }
+    .section-intro { max-width: 930px; color: var(--muted); }
+    .card, .phase, .diagram-shell, .table-shell, .matrix-shell {
+      background: rgba(16,22,34,.9);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .card { padding: 20px; }
+    .card ul:last-child, .card p:last-child { margin-bottom: 0; }
+    ul, ol { padding-left: 20px; }
+    li + li { margin-top: 6px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 9px; margin: 14px 0; }
+    .legend span, .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: 10px; }
+    .legend i { width: 10px; height: 10px; border-radius: 3px; }
+    .legend .primary i { background: var(--primary); }
+    .legend .secondary i { background: var(--secondary); }
+    .legend .unchanged i { background: #39445a; }
+    .diagram-shell { overflow: auto; padding: 10px; }
+    .diagram { min-width: 1120px; height: auto; display: block; }
+    .diagram .lane { fill: #0c111c; stroke: #283247; stroke-width: 1.3; }
+    .diagram .lane-label { fill: #7f8da6; font: 800 11px Inter, sans-serif; letter-spacing: 1.2px; }
+    .diagram .edge { stroke: #3b465d; stroke-width: 1.7; fill: none; marker-end: url(#arrow); }
+    .diagram .node rect { fill: #182132; stroke: #39455d; stroke-width: 1.3; rx: 9; }
+    .diagram .node text { fill: #cbd4e5; font: 650 11px Inter, sans-serif; text-anchor: middle; }
+    .diagram .node.primary rect { fill: rgba(140,125,255,.22); stroke: #9b8fff; stroke-width: 2.2; filter: drop-shadow(0 0 6px rgba(140,125,255,.25)); }
+    .diagram .node.primary text { fill: #f0edff; }
+    .diagram .node.secondary rect { fill: rgba(66,213,223,.12); stroke: #49d8e1; stroke-width: 1.8; }
+    .diagram .node.secondary text { fill: #d9fcff; }
+    .phase { overflow: hidden; margin-top: 24px; }
+    .phase-title { display: flex; align-items: flex-start; gap: 16px; padding: 22px 24px; background: var(--panel-2); border-bottom: 1px solid var(--line); }
+    .phase-number { flex: 0 0 auto; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; color: white; background: linear-gradient(145deg,#978aff,#5d4ce1); font-size: 21px; font-weight: 850; }
+    .phase-title p { margin: 5px 0 0; color: var(--muted); }
+    .phase-meta { margin-left: auto; text-align: right; white-space: nowrap; }
+    .phase-meta strong { display: block; color: var(--secondary); }
+    .phase-content { padding: 22px; }
+    .phase-objective { padding: 14px 16px; margin-bottom: 16px; color: #d7dded; background: #0d131e; border-left: 3px solid var(--primary); border-radius: 8px; }
+    .table-shell, .matrix-shell { overflow: auto; }
+    table { width: 100%; min-width: 980px; border-collapse: collapse; }
+    th, td { padding: 12px 13px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { color: #b9c5da; background: #151d2b; font-size: 10px; letter-spacing: .6px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    td ul { margin: 0; padding-left: 17px; }
+    .component { min-width: 154px; color: #f0f3ff; font-weight: 750; }
+    .component small { display: block; margin-top: 3px; color: var(--muted); font-weight: 500; }
+    .owner-a { color: #9ac8ff; font-weight: 750; }
+    .owner-b { color: #8ef0c5; font-weight: 750; }
+    .owner-both { color: #c7bdff; font-weight: 750; }
+    .pill.primary { color: #d6d0ff; background: var(--primary-soft); }
+    .pill.secondary { color: #aef7fb; background: var(--secondary-soft); }
+    .pill.done { color: #93f0c5; background: rgba(67,211,148,.11); }
+    .pill.defer { color: #ffacb6; background: rgba(255,116,132,.1); }
+    .exit-gate { margin-top: 14px; padding: 14px 16px; color: #c7f6df; background: rgba(67,211,148,.08); border: 1px solid rgba(67,211,148,.22); border-radius: 11px; }
+    .matrix-shell td:not(:first-child), .matrix-shell th:not(:first-child) { text-align: center; }
+    .impact-dot { display: inline-block; width: 14px; height: 14px; border-radius: 4px; }
+    .impact-dot.p { background: var(--primary); box-shadow: 0 0 8px rgba(140,125,255,.28); }
+    .impact-dot.s { background: var(--secondary); }
+    .impact-dot.n { background: #354056; }
+    .schedule { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; }
+    .slot { min-height: 130px; padding: 13px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+    .slot strong { display: block; margin-bottom: 7px; color: var(--secondary); }
+    .slot span { display: block; color: var(--muted); font-size: 11px; }
+    .slot .a { color: #a9d0ff; }
+    .slot .b { color: #93f1cb; }
+    .priority { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .priority .card { border-top: 3px solid var(--green); }
+    .priority .card:nth-child(2) { border-top-color: var(--amber); }
+    .priority .card:nth-child(3) { border-top-color: var(--red); }
+    footer { margin-top: 35px; padding: 35px 0 70px; color: var(--muted); border-top: 1px solid var(--line); }
+    @media (max-width: 920px) {
+      nav { display: none; }
+      .two-col, .priority { grid-template-columns: 1fr; }
+      .schedule { grid-template-columns: repeat(2,1fr); }
+      .phase-meta { display: none; }
+    }
+    @media (max-width: 560px) {
+      h1 { letter-spacing: -1.5px; }
+      .schedule { grid-template-columns: 1fr; }
+      .phase-title { padding: 18px; }
+      .phase-content { padding: 14px; }
+    }
+    @media print {
+      :root { color-scheme: light; --bg:#fff; --panel:#fff; --panel-2:#f4f6fa; --line:#d6dce7; --text:#111827; --muted:#5c6675; }
+      body { color:#111827; background:#fff; font-size:10px; }
+      .topbar { display:none; }
+      .hero { padding-top:28px; }
+      section { padding:22px 0; }
+      .phase { break-before:page; background:#fff; }
+      .card, .diagram-shell, .table-shell, .matrix-shell { background:#fff; }
+      .diagram .lane { fill:#f7f8fb; stroke:#cfd6e2; }
+      .diagram .node rect { fill:#fff; stroke:#aeb8c8; }
+      .diagram .node text { fill:#1f2937; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="mark">🧭</span><span>NaviNate Component Roadmap</span></div>
+    <nav><a href="#map">System map</a><a href="#phase-1">Phase 1</a><a href="#phase-2">Phase 2</a><a href="#phase-3">Phase 3</a><a href="#phase-4">Phase 4</a><a href="#phase-5">Phase 5</a><a href="#execution">24h execution</a></nav>
+    <button class="print" onclick="window.print()">Print / Save PDF</button>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">Architecture-first plan · two people · next 24 hours</div>
+      <h1>Five phases mapped to the components they change.</h1>
+      <p class="lede">Every phase below uses the same system diagram. Purple components are directly changed in that phase; cyan components require contract or integration changes; gray components remain stable. The tables specify exactly what changes inside each impacted component.</p>
+      <div class="scope-note"><strong>Planning rule:</strong> both people work against stable component contracts. Person A owns backend, data, security, and infrastructure. Person B owns browser SDK, action execution, UI, and developer assets. Changes cross ownership only through the contracts shown in the diagrams.</div>
+    </section>
+
+    <section id="map">
+      <div class="kicker">Canonical system map</div>
+      <h2>The components remain stable; phase impact changes</h2>
+      <p class="section-intro">This is the target component model derived from the initial screenshots and the current code. Today, several browser components live together inside <code>widget/widget.js</code>, and several backend components live together inside <code>server/server.js</code>. Phase 1 creates the boundaries; later phases improve the behavior behind them.</p>
+      <div class="legend"><span class="primary"><i></i>Directly changed in this phase</span><span class="secondary"><i></i>Contract/integration impact</span><span class="unchanged"><i></i>No planned change</span></div>
+      <div class="diagram-shell"><div class="diagram-host" data-phase="baseline" aria-label="NaviNate canonical component architecture"></div></div>
+      <div class="matrix-shell" style="margin-top:16px">
+        <table>
+          <thead><tr><th>Component</th><th>Phase 1<br>SDK</th><th>Phase 2<br>Trust</th><th>Phase 3<br>Developer product</th><th>Phase 4<br>Infrastructure</th><th>Phase 5<br>Differentiation</th></tr></thead>
+          <tbody>
+            <tr><td class="component">Loader & Public API</td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot s"></i></td><td><i class="impact-dot n"></i></td></tr>
+            <tr><td class="component">Core Agent Runtime</td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot s"></i></td><td><i class="impact-dot p"></i></td></tr>
+            <tr><td class="component">Page Adapter</td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot s"></i></td></tr>
+            <tr><td class="component">Action Executor</td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot s"></i></td></tr>
+            <tr><td class="component">Safety & Verification</td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td></tr>
+            <tr><td class="component">Visual Component</td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td></tr>
+            <tr><td class="component">Debug Inspector</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td></tr>
+            <tr><td class="component">Developer Assets</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td></tr>
+            <tr><td class="component">API Gateway & Auth</td><td><i class="impact-dot s"></i></td><td><i class="impact-dot s"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td></tr>
+            <tr><td class="component">OpenAI Planner</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot s"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td></tr>
+            <tr><td class="component">Session & Telemetry</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td></tr>
+            <tr><td class="component">Company Configuration</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td></tr>
+            <tr><td class="component">Analytics & Chronicle</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td></tr>
+            <tr><td class="component">Tenant Data Store</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td></tr>
+            <tr><td class="component">CDN & Hosting</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td></tr>
+            <tr><td class="component">Monitoring & Ops</td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot n"></i></td><td><i class="impact-dot p"></i></td><td><i class="impact-dot n"></i></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <article class="phase" id="phase-1">
+      <header class="phase-title"><div class="phase-number">1</div><div><div class="kicker">Extract the SDK</div><h3>Create boundaries and lifecycle without changing the working behavior</h3><p>Turn the current demo-specific widget into a reusable browser SDK with a small public surface.</p></div><div class="phase-meta"><strong>H0–H4</strong>Person B leads<br>Person A defines contracts</div></header>
+      <div class="phase-content">
+        <div class="phase-objective"><strong>System outcome:</strong> a company page loads one versioned script; the loader initializes exactly one SDK instance; runtime, page scanning, action execution, safety, and UI can evolve independently.</div>
+        <div class="legend"><span class="primary"><i></i>Direct change</span><span class="secondary"><i></i>Contract impact</span><span class="unchanged"><i></i>Stable</span></div>
+        <div class="diagram-shell"><div class="diagram-host" data-phase="phase1" aria-label="Phase 1 impacted component diagram"></div></div>
+        <div class="table-shell" style="margin-top:16px"><table>
+          <thead><tr><th>Impacted component</th><th>What exists now</th><th>Exact changes in Phase 1</th><th>Owner</th><th>Exit evidence</th></tr></thead>
+          <tbody>
+            <tr><td class="component">Loader & Public API<small>Browser</small></td><td>The script self-initializes from query-string configuration.</td><td><ul><li>Add `NaviNate.init(options)` and return an assistant handle.</li><li>Expose `open`, `close`, `start`, `undo`, and `destroy`.</li><li>Read `data-client-id`, backend URL, theme, mode, and debug options.</li><li>Guard duplicate script load and duplicate initialization.</li><li>Validate configuration before mounting.</li></ul></td><td class="owner-b">B</td><td>Initialize/destroy twice with no duplicate panel, cursor, listeners, IDs, or session loop.</td></tr>
+            <tr><td class="component">Core Agent Runtime<small>Browser</small></td><td>Goal loop, history, turn counting, page scan, API calls, and UI updates are coupled.</td><td><ul><li>Extract a runtime state machine: idle → planning → executing → verifying → complete/failed.</li><li>Inject page adapter, executor, API client, telemetry, and UI dependencies.</li><li>Own goal ID, turn ID, step cap, history, cancellation, and completion.</li><li>Remove direct DOM styling and demo-site assumptions.</li></ul></td><td class="owner-b">B</td><td>The existing “most expensive product” goal still completes through the runtime interface.</td></tr>
+            <tr><td class="component">Page Adapter<small>Browser</small></td><td>`scanDom()` discovers controls inside the widget file.</td><td><ul><li>Move discovery, labels, context, options, current values, visibility, and stable ID generation behind `snapshot()`.</li><li>Add `observe(callback)`, `find(id)`, and `destroy()`.</li><li>Exclude the NaviNate UI and ignored/sensitive elements.</li><li>Keep output compatible with the current backend prompt.</li></ul></td><td class="owner-b">B</td><td>A snapshot fixture returns deterministic IDs and labels before and after a harmless re-render.</td></tr>
+            <tr><td class="component">Action Executor<small>Browser</small></td><td>DOM actions and cursor animation are mixed with the loop.</td><td><ul><li>Define `execute(action, context) → ActionResult`.</li><li>Move click/type/select/scroll/navigate/highlight dispatch behind one interface.</li><li>Return a structured result placeholder even before Phase 2 verification is added.</li><li>Remove chat-rendering responsibilities.</li></ul></td><td class="owner-b">B</td><td>All existing action types pass through exactly one executor entrypoint.</td></tr>
+            <tr><td class="component">Safety & Verification<small>Browser</small></td><td>Safety checks are distributed through prompts and widget conditionals.</td><td><ul><li>Create a policy interface with `classify`, `validate`, and `requiresConfirmation` hooks.</li><li>Keep Phase 1 behavior permissive but make every executor call pass through the policy.</li><li>Define the structured `ActionResult` contract used in Phase 2.</li></ul></td><td class="owner-a">A contract<br><span class="owner-b">B adapter</span></td><td>No action can bypass the policy hook; result schema is frozen.</td></tr>
+            <tr><td class="component">Visual Component<small>Browser</small></td><td>The injected chat, cursor, status, and loop know about each other.</td><td><ul><li>Expose `mount`, `unmount`, `showMessage`, `showPlan`, `showError`, `confirm`, and cursor methods.</li><li>Move all CSS under a scoped root or Web Component boundary.</li><li>Receive events from runtime instead of controlling runtime.</li></ul></td><td class="owner-b">B</td><td>UI can mount/unmount without starting a goal; runtime can run against a test UI adapter.</td></tr>
+            <tr><td class="component">API Gateway & Auth<small>Backend</small></td><td>`/chat`, `/config`, and logging endpoints exist without a versioned SDK contract.</td><td><ul><li>Document the current request/response schema as `v1`.</li><li>Add capability/version fields so the SDK can detect incompatibility.</li><li>Keep OpenAI credentials and planning implementation private.</li></ul></td><td class="owner-a">A</td><td>Saved request/response fixtures define the SDK↔backend boundary.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="exit-gate"><strong>Phase 1 gate:</strong> a fresh HTML page can load, initialize, open, run one current goal, close, destroy, and reinitialize without duplicate state.</div>
+      </div>
+    </article>
+
+    <article class="phase" id="phase-2">
+      <header class="phase-title"><div class="phase-number">2</div><div><div class="kicker">Make actions trustworthy</div><h3>Validate, execute once, verify observable outcomes, and fail safely</h3><p>Reliability becomes a component responsibility, not a prompt-only expectation.</p></div><div class="phase-meta"><strong>H4–H9</strong>Person B executor<br>Person A policy/telemetry</div></header>
+      <div class="phase-content">
+        <div class="phase-objective"><strong>System outcome:</strong> the backend proposes an action, the policy accepts/blocks/confirms it, the executor performs it once, verification proves the result, and telemetry records the full decision chain.</div>
+        <div class="legend"><span class="primary"><i></i>Direct change</span><span class="secondary"><i></i>Contract impact</span><span class="unchanged"><i></i>Stable</span></div>
+        <div class="diagram-shell"><div class="diagram-host" data-phase="phase2" aria-label="Phase 2 impacted component diagram"></div></div>
+        <div class="table-shell" style="margin-top:16px"><table>
+          <thead><tr><th>Impacted component</th><th>Exact changes in Phase 2</th><th>Failure behavior</th><th>Owner</th><th>Exit evidence</th></tr></thead>
+          <tbody>
+            <tr><td class="component">Page Adapter<small>Browser</small></td><td><ul><li>Associate controls with labels, forms, cards, and sections.</li><li>Capture normalized before/after state for value, checked, selected option, URL, visibility, active state, and nearby text.</li><li>Use MutationObserver to invalidate stale references and reacquire targets by stable ID plus fallback signature.</li><li>Support optional `data-navinate-*` hints.</li></ul></td><td>Return `TARGET_NOT_FOUND`, `TARGET_STALE`, or `TARGET_AMBIGUOUS`; never guess between multiple matches.</td><td class="owner-b">B</td><td>Dynamic re-render test finds the intended target again or fails explicitly.</td></tr>
+            <tr><td class="component">Action Executor<small>Browser</small></td><td><ul><li>Add explicit `clear` and first-class native `select`.</li><li>Use one timeout wrapper and one dispatch path per action.</li><li>Emit `execution_started`, `interaction_dispatched`, and `execution_finished` exactly once.</li><li>Record reversible before-state for type/select/toggle actions.</li></ul></td><td>Timeout or DOM exception returns a structured failure and stops that turn; no automatic duplicate click.</td><td class="owner-b">B</td><td>Every action returns `{success, action, target, before, after, durationMs, errorCode}`.</td></tr>
+            <tr><td class="component">Safety & Verification<small>Browser + backend policy</small></td><td><ul><li>Validate action schema, supported action, required fields, allowed URL, target eligibility, and maximum steps.</li><li>Classify low, medium, and high risk.</li><li>Require confirmation for submit, purchase, payment, deletion, account changes, and navigation away.</li><li>Verify type/select by value; click by expected DOM/state change; navigation by normalized URL.</li><li>Add best-effort undo for reversible actions.</li></ul></td><td>Blocked actions never reach the executor. Unverified outcomes report failure even if no exception occurred.</td><td class="owner-a">A policy<br><span class="owner-b">B verification</span></td><td>Safe action succeeds; blocked action does nothing; confirmed action executes once; cancel does nothing; undo restores prior value.</td></tr>
+            <tr><td class="component">Core Agent Runtime<small>Browser</small></td><td><ul><li>Wait for verification before reporting an action result to the backend.</li><li>Stop on failure, timeout, cancellation, repeated action, or step cap.</li><li>Send verification evidence into the next turn so the planner knows what changed.</li><li>Prevent concurrent goals and allow cancellation.</li></ul></td><td>Transition to failed/stopped state with a user-readable reason; do not silently continue.</td><td class="owner-b">B</td><td>A failed action cannot produce a success analytics event or trigger an uncontrolled next turn.</td></tr>
+            <tr><td class="component">Visual Component<small>Browser</small></td><td><ul><li>Show action reason before movement.</li><li>Add confirmation dialog with exact action, target, and impact.</li><li>Show timeout, blocked, verification failure, retry, cancel, and undo states.</li><li>Keep cursor and highlight synchronized with the verified target.</li></ul></td><td>User always sees why the run stopped and what was or was not changed.</td><td class="owner-b">B</td><td>A reviewer can distinguish planned, executing, confirmed, succeeded, and failed states visually.</td></tr>
+            <tr><td class="component">Company Configuration<small>Base44</small></td><td><ul><li>Add allowed domains/actions, protected action patterns, ignored selectors, sensitive-field selectors, maximum steps, mode, and retention policy.</li><li>Validate configuration server-side and send only safe browser policy.</li></ul></td><td>Invalid config fails closed to conservative defaults and produces a configuration warning.</td><td class="owner-a">A</td><td>Two clients receive different safety policies without modifying SDK code.</td></tr>
+            <tr><td class="component">Session & Telemetry<small>Backend</small></td><td><ul><li>Store policy decision, confirmation, before/after evidence, timeout, structured error, undo, and final outcome.</li><li>Link all events to goal ID and turn ID.</li></ul></td><td>Logging failure must not execute an action twice; warn and continue only when safe.</td><td class="owner-a">A</td><td>Chronicle shows plan → policy → confirmation → execution → verification in order.</td></tr>
+            <tr><td class="component">API Gateway & Auth<small>Backend contract</small></td><td><ul><li>Validate proposed actions and returned `ActionResult` payloads against the frozen schema.</li><li>Reject unsupported actions and inconsistent goal/turn IDs before persistence or replanning.</li><li>Return structured policy and validation errors to the runtime.</li></ul></td><td>Malformed or unsupported action returns `INVALID_ACTION`; it never reaches the executor.</td><td class="owner-a">A</td><td>Contract tests reject missing target/value, unknown action, and mismatched turn IDs.</td></tr>
+            <tr><td class="component">OpenAI Planner<small>Backend planning</small></td><td><ul><li>Add explicit `clear` to the tool schema and describe when `select` is required.</li><li>Include prior verified result and failure code in the next prompt.</li><li>Require one action per turn and preserve the existing final irreversible-action policy.</li></ul></td><td>After an unverified result, the planner must not claim completion or blindly repeat the same action.</td><td class="owner-a">A</td><td>Prompt/response log shows verification evidence influencing the next planned step.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="exit-gate"><strong>Phase 2 gate:</strong> safe, blocked, confirmed, failed, timed-out, dynamic re-render, and undo test cases all produce the correct UI state and chronological evidence.</div>
+      </div>
+    </article>
+
+    <article class="phase" id="phase-3">
+      <header class="phase-title"><div class="phase-number">3</div><div><div class="kicker">Create the developer product</div><h3>Package the components behind stable integration surfaces</h3><p>Companies integrate through a loader or SDK, not by understanding DOM scanning or OpenAI tool calls.</p></div><div class="phase-meta"><strong>H9–H13</strong>Person B package/UX<br>Person A API/config</div></header>
+      <div class="phase-content">
+        <div class="phase-objective"><strong>System outcome:</strong> one no-code embed and one typed JavaScript API both initialize the same core SDK and Web Component; debug tooling makes integration failures diagnosable.</div>
+        <div class="legend"><span class="primary"><i></i>Direct change</span><span class="secondary"><i></i>Contract impact</span><span class="unchanged"><i></i>Stable</span></div>
+        <div class="diagram-shell"><div class="diagram-host" data-phase="phase3" aria-label="Phase 3 impacted component diagram"></div></div>
+        <div class="table-shell" style="margin-top:16px"><table>
+          <thead><tr><th>Impacted component</th><th>Exact changes in Phase 3</th><th>Public surface</th><th>Owner</th><th>Exit evidence</th></tr></thead>
+          <tbody>
+            <tr><td class="component">Loader & Public API<small>Browser</small></td><td><ul><li>Build versioned `widget.js` loader with explicit client/backend/version attributes.</li><li>Support auto-init and manual `NaviNate.init()` without double loading.</li><li>Freeze lifecycle events and public error codes.</li><li>Add configuration validation with actionable console/debug errors.</li></ul></td><td><code>&lt;script src=".../v1/widget.js" data-client-id="..." async&gt;</code></td><td class="owner-b">B</td><td>A clean HTML file integrates from documentation in under five minutes.</td></tr>
+            <tr><td class="component">Visual Component<small>Browser</small></td><td><ul><li>Wrap chat, cursor, explanations, confirmation, plan, undo, and errors in a scoped Web Component.</li><li>Expose theme tokens and container placement.</li><li>Meet keyboard focus, dialog, contrast, and screen-reader basics.</li></ul></td><td><code>&lt;navinate-help client-id="..."&gt;</code> or loader-created equivalent.</td><td class="owner-b">B</td><td>Works in plain HTML and inside a React/Vue test shell without CSS leakage.</td></tr>
+            <tr><td class="component">Developer Assets<small>Package, types, examples</small></td><td><ul><li>Create `@navinate/web` package boundary or equivalent build artifact.</li><li>Add TypeScript declarations/JSDoc for options, events, methods, actions, and results.</li><li>Create plain HTML sample first; React/Vue examples are documentation-only if time remains.</li><li>Document CSP, CORS, domain allowlist, privacy, errors, and troubleshooting.</li></ul></td><td><code>import { help } from "@navinate/web"</code></td><td class="owner-b">B</td><td>Editor type checking catches invalid mode/action configuration.</td></tr>
+            <tr><td class="component">Debug Inspector<small>Browser tooling</small></td><td><ul><li>Overlay discovered element ID, label, context, eligibility, and risk.</li><li>Show selected target, raw proposed action, verification state, and current turn ID.</li><li>Enable only through explicit debug configuration and never expose secrets.</li></ul></td><td><code>debug: true</code> and a visual inspector toggle.</td><td class="owner-b">B</td><td>Integrator can explain why an element was selected or ignored without reading source.</td></tr>
+            <tr><td class="component">API Gateway & Auth<small>Backend</small></td><td><ul><li>Expose versioned `/v1/config`, `/v1/sessions`, `/v1/turns`, and `/v1/events` contract or compatible aliases.</li><li>Return capability negotiation and structured errors.</li><li>Accept a public client identifier; keep provider credentials server-side.</li></ul></td><td>Documented JSON contract plus examples.</td><td class="owner-a">A</td><td>Old widget receives a clear incompatibility response instead of undefined behavior.</td></tr>
+            <tr><td class="component">Company Configuration<small>Base44</small></td><td><ul><li>Add bot name, branding, welcome message, instructions, mode, allowed domains/actions, suggested prompts, and debug permission.</li><li>Define client registration and domain verification workflow.</li></ul></td><td>One company configuration record keyed by public client ID.</td><td class="owner-a">A</td><td>Changing brand/instructions in Base44 changes the embedded assistant without redeploying the SDK.</td></tr>
+            <tr><td class="component">CDN, Hosting & Ops<small>Delivery</small></td><td><ul><li>Produce immutable versioned asset path and a controlled `latest` alias only for demos.</li><li>Add cache headers, source-map policy, integrity/version documentation, and rollback artifact.</li></ul></td><td><code>/v1/widget.js</code> plus pinned build URL.</td><td class="owner-a">A deploy<br><span class="owner-b">B build</span></td><td>Pinned loader continues working after a newer build is deployed.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="exit-gate"><strong>Phase 3 gate:</strong> an unfamiliar developer embeds NaviNate from README instructions, sees correct branding, runs a goal, uses debug inspector, and can remove the integration cleanly.</div>
+      </div>
+    </article>
+
+    <article class="phase" id="phase-4">
+      <header class="phase-title"><div class="phase-number">4</div><div><div class="kicker">Production infrastructure</div><h3>Secure, isolate, persist, deploy, and operate the platform</h3><p>The browser remains a public client; all credentials, tenant decisions, planning, and durable data stay behind the backend.</p></div><div class="phase-meta"><strong>H13–H18</strong>Person A leads<br>Person B integration test</div></header>
+      <div class="phase-content">
+        <div class="phase-objective"><strong>System outcome:</strong> an allowed company domain reaches a versioned, rate-limited backend; tenant configuration and sessions are isolated; OpenAI credentials remain private; health, errors, and model activity are observable.</div>
+        <div class="legend"><span class="primary"><i></i>Direct change</span><span class="secondary"><i></i>Contract impact</span><span class="unchanged"><i></i>Stable</span></div>
+        <div class="diagram-shell"><div class="diagram-host" data-phase="phase4" aria-label="Phase 4 impacted component diagram"></div></div>
+        <div class="table-shell" style="margin-top:16px"><table>
+          <thead><tr><th>Impacted component</th><th>Exact changes in Phase 4</th><th>Security / operational requirement</th><th>Owner</th><th>Exit evidence</th></tr></thead>
+          <tbody>
+            <tr><td class="component">API Gateway & Auth<small>Backend edge</small></td><td><ul><li>Validate client ID and `Origin` against the company allowlist.</li><li>Add versioning, request IDs, payload/schema limits, rate limits, timeouts, and structured errors.</li><li>Restrict log viewer with token/role and disable broad CORS.</li><li>Separate public browser endpoints from operator endpoints.</li></ul></td><td>Fail closed for unknown client/domain; never accept OpenAI credentials from browser requests.</td><td class="owner-a">A</td><td>Allowed origin succeeds; unknown origin/client, oversized body, and rate burst are rejected and logged.</td></tr>
+            <tr><td class="component">OpenAI Planner<small>Backend</small></td><td><ul><li>Centralize model/tool configuration and prompt version.</li><li>Validate tool output against the action schema before returning it.</li><li>Add provider timeout, retry policy for safe failures, token accounting, and model error taxonomy.</li><li>Protect system/client instructions from page-text prompt injection by explicit trust boundaries.</li></ul></td><td>API key exists only in backend secret storage; model output is untrusted until validation.</td><td class="owner-a">A</td><td>Source/network/log review finds no key; invalid tool arguments never reach the SDK.</td></tr>
+            <tr><td class="component">Session & Telemetry<small>Backend data</small></td><td><ul><li>Replace pilot-only JSON files with a store interface; use Base44 or another database adapter.</li><li>Persist tenant ID, goal, turn, event sequence, status, timestamps, usage, and retention metadata.</li><li>Serialize events per goal and make writes idempotent.</li><li>Add deletion/retention path and redact or disable full model I/O for production.</li></ul></td><td>Every query is tenant-scoped; sensitive model I/O requires explicit configuration and protected access.</td><td class="owner-a">A</td><td>Two test tenants cannot read each other’s sessions; duplicate event request does not duplicate the event.</td></tr>
+            <tr><td class="component">Company Configuration<small>Base44 control plane</small></td><td><ul><li>Store verified domains, active SDK/API versions, policy, prompt, branding, retention, and tenant status.</li><li>Add server-side validation and audit timestamps.</li><li>Cache briefly with safe invalidation and conservative defaults.</li></ul></td><td>Disabled tenant or removed domain takes effect predictably; browser never receives private configuration.</td><td class="owner-a">A</td><td>Configuration change propagates within the documented TTL and appears in audit history.</td></tr>
+            <tr><td class="component">Analytics & Chronicle<small>Operator plane</small></td><td><ul><li>Add health, request/error rates, provider latency, token usage, action failure, and tenant/session metrics.</li><li>Protect Chronicle access, provide retention warning, and support exact JSON download only when authorized.</li><li>Surface Base44 delivery failures instead of silently swallowing them.</li></ul></td><td>Operational monitoring must not expose secrets or cross-tenant data.</td><td class="owner-a">A backend<br><span class="owner-b">B viewer</span></td><td>A failed model call and failed analytics delivery are diagnosable from request ID to goal event.</td></tr>
+            <tr><td class="component">CDN, Hosting & Ops<small>Delivery</small></td><td><ul><li>Deploy backend separately from Base44 and deploy versioned SDK asset.</li><li>Add environment validation, health/readiness endpoint, TLS, cache policy, process restart, and rollback instructions.</li><li>Define staging and production variables; pin a known-good demo version.</li></ul></td><td>OpenAI secret stored by host; only public client ID appears in website source.</td><td class="owner-a">A</td><td>Remote health/config/turn/event smoke tests pass; previous release can be restored within minutes.</td></tr>
+            <tr><td class="component">Loader & Runtime<small>Browser integration</small></td><td><ul><li>Handle 401/403/409/429/5xx and offline states.</li><li>Attach SDK version, request ID, goal ID, and turn ID to calls.</li><li>Respect server capability/policy response and stop on incompatible versions.</li></ul></td><td>Never retry a potentially executed action blindly.</td><td class="owner-b">B</td><td>User sees a safe, actionable message for backend outage, rate limit, and domain rejection.</td></tr>
+            <tr><td class="component">Safety & Verification<small>Shared policy boundary</small></td><td><ul><li>Enforce server-supplied tenant policy version and reject stale or missing policy.</li><li>Validate navigation against allowed domains before and after redirects.</li><li>Attach policy decision and verification evidence to the signed/validated turn contract.</li></ul></td><td>The browser cannot weaken a tenant policy; the server independently checks high-risk and navigation decisions.</td><td class="owner-a">A server<br><span class="owner-b">B browser</span></td><td>Tampered browser policy is rejected; disallowed redirect is stopped and logged.</td></tr>
+            <tr><td class="component">Tenant Data Store<small>Base44 or database adapter</small></td><td><ul><li>Create tenant-scoped repositories for companies, sessions, turns, events, and retention metadata.</li><li>Add idempotency keys and indexes for tenant/goal/time queries.</li><li>Implement retention deletion and session export through the repository interface.</li></ul></td><td>Every operation requires tenant context; no unscoped list/read/update method is exposed.</td><td class="owner-a">A</td><td>Cross-tenant access tests fail; duplicate event writes remain single; retention deletion removes the complete goal record.</td></tr>
+            <tr><td class="component">Monitoring & Ops<small>Delivery</small></td><td><ul><li>Add structured server logs, error tracking, uptime/readiness checks, request latency, OpenAI latency/usage, and action failure metrics.</li><li>Define alerts for elevated 5xx, provider failures, rejected analytics, and storage errors.</li><li>Document on-call diagnosis using request ID, goal ID, and turn ID.</li></ul></td><td>Monitoring data is tenant-safe and excludes secrets/full prompts unless explicitly protected.</td><td class="owner-a">A</td><td>A synthetic failed turn can be traced from alert to server request to Chronicle goal.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="exit-gate"><strong>Phase 4 gate:</strong> a deployed approved domain completes a goal; an unapproved domain is rejected; no secrets reach the browser; tenant data is isolated; the deployment can be monitored and rolled back.</div>
+      </div>
+    </article>
+
+    <article class="phase" id="phase-5">
+      <header class="phase-title"><div class="phase-number">5</div><div><div class="kicker">Differentiation</div><h3>Turn execution evidence into guided workflows and measurable outcomes</h3><p>Build on the trustworthy runtime and telemetry rather than adding disconnected demo features.</p></div><div class="phase-meta"><strong>H18–H21</strong>Both people<br>thin demonstrable slice</div></header>
+      <div class="phase-content">
+        <div class="phase-objective"><strong>System outcome:</strong> operators can understand what happened, measure whether goals completed, curate a successful journey, and safely reuse execution knowledge. Voice, handoff, and learning remain follow-on extensions of the same components.</div>
+        <div class="legend"><span class="primary"><i></i>Direct change</span><span class="secondary"><i></i>Contract impact</span><span class="unchanged"><i></i>Stable</span></div>
+        <div class="diagram-shell"><div class="diagram-host" data-phase="phase5" aria-label="Phase 5 impacted component diagram"></div></div>
+        <div class="table-shell" style="margin-top:16px"><table>
+          <thead><tr><th>Impacted component</th><th>24-hour thin slice</th><th>Full Phase 5 evolution</th><th>Owner</th><th>Exit evidence</th></tr></thead>
+          <tbody>
+            <tr><td class="component">Session & Telemetry<small>Backend</small></td><td><ul><li>Calculate goal completion, failure, turns, actions, duration, token use, and estimated time saved.</li><li>Preserve exact chronological evidence per goal.</li></ul></td><td>Add reusable workflow traces, session comparison, annotations, consent flags, and reviewed success labels.</td><td class="owner-a">A</td><td>Summary values reconcile with the underlying events for the showcase goal.</td></tr>
+            <tr><td class="component">Analytics & Chronicle<small>Dashboard</small></td><td><ul><li>Show per-turn prompt, response, readable tool action, execution, verification, latency, and usage.</li><li>Add filters, result summary, failure report, and JSON export.</li></ul></td><td>Add conversion/task-completion funnels, common goals, failure cohorts, time saved, workflow review, and journey authoring.</td><td class="owner-b">B UI<br><span class="owner-a">A metrics</span></td><td>A non-engineer can explain the entire three-turn run and identify why any step failed.</td></tr>
+            <tr><td class="component">Core Agent Runtime<small>Browser</small></td><td><ul><li>Emit a deterministic step record containing intent, target signature, action, result, and verification.</li><li>Support one curated guided journey as an optional plan hint.</li></ul></td><td>Add record/replay mode, workflow checkpoints, resume, human handoff state, and approved learning suggestions.</td><td class="owner-b">B</td><td>One guided workflow completes three consecutive times and still verifies every action.</td></tr>
+            <tr><td class="component">Visual Component<small>Browser</small></td><td><ul><li>Show action plan, explanation, progress, confirmation, completion, and failure summary.</li><li>Clearly distinguish assistant suggestion from autonomous execution.</li></ul></td><td>Add voice input/output, human support handoff, co-browsing status, journey chooser, and richer accessibility.</td><td class="owner-b">B</td><td>User can see what will happen, what is happening, and what changed.</td></tr>
+            <tr><td class="component">Company Configuration<small>Base44</small></td><td><ul><li>Add suggested prompts, one guided journey definition, success condition, and analytics toggles.</li></ul></td><td>Add workflow builder, annotation management, handoff routing, voice/persona settings, learning review queue, and conversion definitions.</td><td class="owner-a">A data<br><span class="owner-b">B UX contract</span></td><td>Company changes the guided journey and suggested prompt without redeploying the SDK.</td></tr>
+            <tr><td class="component">OpenAI Planner<small>Backend</small></td><td><ul><li>Include approved journey hints and prior verified action results in the prompt.</li><li>Return concise completion/failure explanations.</li></ul></td><td>Use reviewed successful sessions for retrieval, automatic annotation suggestions, workflow optimization, and handoff summaries—never direct unreviewed self-training.</td><td class="owner-a">A</td><td>Planner follows hints without bypassing current page state, policy, or verification.</td></tr>
+            <tr><td class="component">Page Adapter & Executor<small>Browser</small></td><td><ul><li>Expose stable target signatures and verification evidence required for workflow recording.</li></ul></td><td>Use optional company annotations such as `data-navinate-name`, risk, group, success, ignore, and stable ID; register difficult actions through JavaScript.</td><td class="owner-b">B</td><td>Recorded step references a meaningful target signature rather than a brittle CSS path.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="exit-gate"><strong>Phase 5 gate:</strong> the showcase journey is understandable, measurable, exportable, and repeatable while still passing the same policy and verification path as an unrecorded goal.</div>
+      </div>
+    </article>
+
+    <section id="execution">
+      <div class="kicker">Two-person execution</div>
+      <h2>Component ownership controls the 24-hour schedule</h2>
+      <p class="section-intro">The phases remain sequential at the contract level, but the two owners work in parallel inside each time block. H21–H24 is reserved for cross-component integration, adversarial QA, deployment freeze, and demo rehearsal.</p>
+      <div class="schedule">
+        <div class="slot"><strong>H0–H4 · Phase 1</strong><span class="a">A: API/action/result contracts</span><span class="b">B: SDK boundaries and lifecycle</span></div>
+        <div class="slot"><strong>H4–H9 · Phase 2</strong><span class="a">A: policy, config, telemetry</span><span class="b">B: executor, verification, confirmation UI</span></div>
+        <div class="slot"><strong>H9–H13 · Phase 3</strong><span class="a">A: v1 API, Base44 client config, CDN contract</span><span class="b">B: loader, Web Component, types, inspector</span></div>
+        <div class="slot"><strong>H13–H18 · Phase 4</strong><span class="a">A: auth, isolation, store, deploy, monitoring</span><span class="b">B: error/offline UX and remote integration</span></div>
+        <div class="slot"><strong>H18–H21 · Phase 5</strong><span class="a">A: metrics, workflow data, planner hints</span><span class="b">B: Chronicle, guided journey, plan/progress UI</span></div>
+        <div class="slot"><strong>H21–H24 · Release</strong><span class="a">A: security/deploy/rollback tests</span><span class="b">B: cross-browser/demo/docs tests</span></div>
+      </div>
+      <div class="priority" style="margin-top:20px">
+        <article class="card"><h3>Must finish</h3><ul><li>Phase 1 component boundaries.</li><li>Phase 2 verification and safety.</li><li>Phase 3 loader and integration docs.</li><li>Phase 4 domain/key protection and deployment.</li><li>Phase 5 Chronicle thin slice.</li></ul></article>
+        <article class="card"><h3>Only if gates pass early</h3><ul><li>Private npm package publish.</li><li>One deterministic record/replay workflow.</li><li>Persistent Base44 session adapter beyond pilot needs.</li><li>React/Vue sample shells.</li></ul></article>
+        <article class="card"><h3>Explicitly after 24 hours</h3><ul><li>Voice interaction.</li><li>Human support handoff.</li><li>General workflow builder.</li><li>Automatic annotations.</li><li>Learning from sessions.</li><li>Production autoscaling and full compliance work.</li></ul></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">NaviNate component roadmap · Reorganized around system impact for each of the five original phases.</div></footer>
+
+  <script>
+    const components = {
+      loader:   { x: 45,  y: 82,  w: 165, h: 48, lines: ["Loader &", "Public API"] },
+      runtime:  { x: 260, y: 82,  w: 165, h: 48, lines: ["Core Agent", "Runtime"] },
+      visual:   { x: 45,  y: 180, w: 165, h: 48, lines: ["Visual", "Component"] },
+      page:     { x: 260, y: 180, w: 165, h: 48, lines: ["Page", "Adapter"] },
+      safety:   { x: 45,  y: 278, w: 165, h: 48, lines: ["Safety &", "Verification"] },
+      executor: { x: 260, y: 278, w: 165, h: 48, lines: ["Action", "Executor"] },
+      debug:    { x: 45,  y: 376, w: 165, h: 48, lines: ["Debug", "Inspector"] },
+      assets:   { x: 260, y: 376, w: 165, h: 48, lines: ["Developer", "Assets"] },
+      gateway:  { x: 515, y: 82,  w: 175, h: 48, lines: ["API Gateway", "& Auth"] },
+      planner:  { x: 515, y: 180, w: 175, h: 48, lines: ["OpenAI", "Planner"] },
+      session:  { x: 515, y: 278, w: 175, h: 48, lines: ["Session &", "Telemetry"] },
+      config:   { x: 780, y: 82,  w: 175, h: 48, lines: ["Company", "Configuration"] },
+      analytics:{ x: 780, y: 180, w: 175, h: 48, lines: ["Analytics &", "Chronicle"] },
+      store:    { x: 780, y: 278, w: 175, h: 48, lines: ["Tenant Data", "Store"] },
+      delivery: { x: 1020,y: 82,  w: 150, h: 48, lines: ["CDN &", "Hosting"] },
+      ops:      { x: 1020,y: 180, w: 150, h: 48, lines: ["Monitoring", "& Ops"] }
+    };
+
+    const impacts = {
+      baseline: { primary: [], secondary: [] },
+      phase1: { primary: ["loader","runtime","visual","page","safety","executor"], secondary: ["gateway"] },
+      phase2: { primary: ["runtime","visual","page","safety","executor","session","config"], secondary: ["gateway","planner"] },
+      phase3: { primary: ["loader","visual","debug","assets","gateway","config","delivery"], secondary: [] },
+      phase4: { primary: ["safety","gateway","planner","session","config","analytics","store","delivery","ops"], secondary: ["loader","runtime"] },
+      phase5: { primary: ["runtime","visual","planner","session","config","analytics"], secondary: ["page","executor"] }
+    };
+
+    const edges = [
+      ["loader","runtime"],["loader","visual"],["runtime","page"],["runtime","gateway"],
+      ["page","executor"],["safety","executor"],["runtime","safety"],["debug","page"],
+      ["assets","loader"],["gateway","planner"],["gateway","session"],["gateway","config"],
+      ["planner","session"],["session","store"],["session","analytics"],["config","store"],
+      ["analytics","ops"],["delivery","loader"],["gateway","ops"]
+    ];
+
+    function center(component) { return { x: component.x + component.w / 2, y: component.y + component.h / 2 }; }
+    function edgePath(from, to) {
+      const a = center(components[from]);
+      const b = center(components[to]);
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const x1 = a.x + Math.sign(dx || 1) * Math.min(components[from].w / 2, Math.abs(dx) / 3);
+      const y1 = a.y + Math.sign(dy || 1) * Math.min(components[from].h / 2, Math.abs(dy) / 3);
+      const x2 = b.x - Math.sign(dx || 1) * Math.min(components[to].w / 2, Math.abs(dx) / 3);
+      const y2 = b.y - Math.sign(dy || 1) * Math.min(components[to].h / 2, Math.abs(dy) / 3);
+      return `M ${x1} ${y1} C ${(x1+x2)/2} ${y1}, ${(x1+x2)/2} ${y2}, ${x2} ${y2}`;
+    }
+
+    function renderDiagram(host) {
+      const impact = impacts[host.dataset.phase] || impacts.baseline;
+      const nodeMarkup = Object.entries(components).map(([key, component]) => {
+        const status = impact.primary.includes(key) ? "primary" : impact.secondary.includes(key) ? "secondary" : "";
+        const text = component.lines.map((line, index) => `<tspan x="${component.x + component.w/2}" dy="${index ? 14 : 0}">${line}</tspan>`).join("");
+        return `<g class="node ${status}"><rect x="${component.x}" y="${component.y}" width="${component.w}" height="${component.h}"></rect><text x="${component.x + component.w/2}" y="${component.y + 18}">${text}</text></g>`;
+      }).join("");
+      const edgeMarkup = edges.map(([from,to]) => `<path class="edge" d="${edgePath(from,to)}"></path>`).join("");
+      host.innerHTML = `<svg class="diagram" viewBox="0 0 1200 470" role="img">
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a566f"></path></marker></defs>
+        <rect class="lane" x="20" y="28" width="430" height="420" rx="14"></rect><text class="lane-label" x="40" y="55">COMPANY WEBSITE · NAVINATE WEB SDK</text>
+        <rect class="lane" x="480" y="28" width="240" height="420" rx="14"></rect><text class="lane-label" x="500" y="55">NAVINATE BACKEND</text>
+        <rect class="lane" x="750" y="28" width="235" height="420" rx="14"></rect><text class="lane-label" x="770" y="55">BASE44 CONTROL PLANE</text>
+        <rect class="lane" x="1000" y="28" width="190" height="420" rx="14"></rect><text class="lane-label" x="1020" y="55">DELIVERY & OPERATIONS</text>
+        ${edgeMarkup}${nodeMarkup}
+      </svg>`;
+    }
+
+    document.querySelectorAll(".diagram-host").forEach(renderDiagram);
+  </script>
+</body>
+</html>
